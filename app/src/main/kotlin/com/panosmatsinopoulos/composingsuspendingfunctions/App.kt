@@ -3,7 +3,10 @@
  */
 package com.panosmatsinopoulos.composingsuspendingfunctions
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlin.system.measureTimeMillis
 
 suspend fun doSomethingUsefulOne(): Int {
@@ -16,23 +19,17 @@ suspend fun doSomethingUsefulTwo(): Int {
     return 29
 }
 
-@OptIn(DelicateCoroutinesApi::class)
-fun somethingUsefulOneAsync() = GlobalScope.async {
-    doSomethingUsefulOne()
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun somethingUsefulTwoAsync() = GlobalScope.async {
-    doSomethingUsefulTwo()
+suspend fun concurrentSum() = coroutineScope {
+    val one = async { doSomethingUsefulOne() }
+    val two = async { doSomethingUsefulTwo() }
+    one.await() + two.await()
 }
 
 fun main() {
     println("Main starting...")
     val time = measureTimeMillis {
-        val one = somethingUsefulOneAsync()
-        val two = somethingUsefulTwoAsync()
         runBlocking {
-            println(one.await() + two.await())
+            println(concurrentSum())
         }
     }
 
