@@ -3,13 +3,31 @@
  */
 package com.panosmatsinopoulos.composingsuspendingfunctions
 
-class App {
-    val greeting: String
-        get() {
-            return "Hello World!"
-        }
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlin.system.measureTimeMillis
+
+suspend fun doSomethingUsefulOne(): Int {
+    delay(1_000L)
+    return 13
+}
+
+suspend fun doSomethingUsefulTwo(): Int {
+    delay(1_000L)
+    return 29
 }
 
 fun main() {
-    println(App().greeting)
+    println("Main starting...")
+    var time = 0L
+    runBlocking {
+        time = measureTimeMillis {
+            val one = doSomethingUsefulOne()
+            val two = doSomethingUsefulTwo()
+            println(one + two)
+        }
+    }
+
+    println("Took $time ms")
+    println("Main ending!")
 }
