@@ -3,6 +3,7 @@
  */
 package com.panosmatsinopoulos.composingsuspendingfunctions
 
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.system.measureTimeMillis
@@ -22,9 +23,9 @@ fun main() {
     var time = 0L
     runBlocking {
         time = measureTimeMillis {
-            val one = doSomethingUsefulOne()
-            val two = doSomethingUsefulTwo()
-            println(one + two)
+            val one = async { doSomethingUsefulOne() }
+            val two = async { doSomethingUsefulTwo() }
+            println(one.await() + two.await())
         }
     }
 
